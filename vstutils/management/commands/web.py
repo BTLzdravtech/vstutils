@@ -87,7 +87,7 @@ class Command(BaseCommand):
             options += ' --queues={}'.format(r'\,'.join(settings.WORKER_QUEUES))
         cmd += ['--attach-daemon2']
         run = 'stopsignal=15,reloadsignal=1,'
-        run += 'exec={} -m celery worker'.format(settings.PYTHON_INTERPRETER)
+        run += 'exec=/usr/bin/python3 -m celery worker'
         run += options
         cmd += [run]
         return cmd
