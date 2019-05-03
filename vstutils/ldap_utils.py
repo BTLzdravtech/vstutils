@@ -60,15 +60,6 @@ class LDAP(object):
         else:
             self.domain = username.split('@')[-1]
         self.domain = self.domain.strip()
-        if not self.domain:
-            if r'@' not in username:
-                raise self.InvalidDomainName(
-                    "Domain should be setuped or username should be with @domain.name"
-                )
-        if len(self.domain.split('.')) <= 1:
-            raise self.InvalidDomainName(
-                "Invalid name {}. Should be [full.domain.name]".format(domain)
-            )
         self.auth(self.username, self.password)
 
     def auth(self, username=None, password=None):
@@ -77,14 +68,9 @@ class LDAP(object):
         self.__conn = self.__authenticate(self.connection_string, username, password)
 
     def __prepare_user_with_domain(self, username):
-        user = str(username).split('@')[0]
+        user = str(username)
         domain = str(self.domain)
-        if len(str(username).split('@')) > 1:
-            domain = str(username).split('@')[-1]
-        domain = domain.lower()
-        if domain != user:
-            domain = ','.join(['dc={}'.format(d) for d in domain.split('.') if d])
-        user = self.user_format.format(username=user, domain=domain)
+        user = '{}\{}'.format(domain, user)
         self.logger.debug('Trying auth in ldap with user "{}"'.format(user))
         return user
 
